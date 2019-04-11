@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+// at the end of each task, return to menu
+// modify task 3 (and 4) so that the user is able to enter the text they wish to encrypt and decrypt
+
+
+void taskOne(char originalText[], char encryptedText[], int key);
+void taskOneCall(void);
+void taskTwo(char encryptedText[], char originalText[], int key);
+void taskTwoCall(void);
+char* encrypt(char *originalText, char distortedAlphabet[]);
+void taskThreeCall(void); 
+char* decrypt(char *originalText, char distortedAlphabet[]);
+void taskFourCall(void);
+char *decrypt(char *message, char code[]);
+int find_index(char code[], char char_to_find);
+
+void menu(void);
+
+/*----------------------------------------------------------------------------*/
+
+int main () {
+    menu();
+    return 0;
+}
+void menu(void) {
+    int menuNum;
+    
+    printf("Enter an integer between 0 and 7, based on the options described below: \n 1. Encryption of a message with a rotation cipher given the message text and rotation amount. \n 2. Decryption of a message encrypted with a rotation cipher given cipher text and rotation amount. \n 3. Encryption of a message with a substitution cipher given message text and alphabet substitution. \n 4. Decryption of a message encrypted with a substitution cipher given cipher text and substitutions \n 5. Decryption of a message encrypted with a rotation cipher given cipher text only. \n 6. Decryption of a message encrypted with a substitution cipher given cipher text only. \n");
+    scanf("%d", &menuNum);
+    
+    switch (menuNum) {
+        case 1: taskOneCall(); break;
+        case 2: taskTwoCall(); break;
+        case 3: taskThreeCall(); break;
+        case 4: taskFourCall(); break; 
+        /*case 5: taskFive(); break;
+        case 6: taskSix(); break; */
+        default: printf("The integer described is invalid. Please try again.");
+    }
+    
+    return;
+    
+}
+
+/*----------------------------------------------------------------------------*/
+
+void taskOneCall()
+{
+    int key;
+    char originalText[100];
+    char encryptedText[100];
+    
+    printf("Enter the text that you wish to encrypt here: ");
+    scanf(" %[^\n]%*c", originalText);
+    printf("Enter a number between 0 and 27 to determine the key that encrypts the text previously entered: ");
+    scanf("%d", &key);
+    taskOne(originalText, encryptedText, key);
+    printf("The decrypted text reads: %s", encryptedText);
+    
+}
+void taskOne(char originalText[], char encryptedText[], int key) { 
+    int i = 0;
+  
+    while (i < strlen(originalText)) 
+    {
+        if (originalText[i] >= 'a' && originalText[i] <= 'z') 
+        {
+            originalText[i] = toupper(originalText[i]);
+        } 
+        encryptedText[i] = ((int) originalText[i] -65 + key) % 26 + 65;
+        i++;
+    }
+    return;
+}
+
+/*----------------------------------------------------------------------------*/
+
+
+void taskTwoCall(void) {
+    
+    int key;
+    char originalText[100];
+    char encryptedText[100];
+    
+    printf("Enter the text that you wish to decrypt here: ");
+    scanf(" %[^\n]%*c", encryptedText);
+    printf("Enter a number between 0 and 27 to determine the key that encrypts the text previously entered: ");
+    scanf("%d", &key);
+    taskTwo(encryptedText, originalText, key);
+    printf("The encrypted text reads: %s", originalText);
+    
+}
+void taskTwo(char encryptedText[], char originalText[], int key) { 
+    int i = 0;
+  
+    while (i < strlen(encryptedText)) 
+    {
+        if (encryptedText[i] >= 'a' && encryptedText[i] <= 'z') 
+        {
+            encryptedText[i] = toupper(encryptedText[i]);
+        } 
+        originalText[i] = ((int) encryptedText[i] -65 - key) % 26 + 65;
+        i++;
+    }
+    return;
+}
+
+/*----------------------------------------------------------------------------*/
+
+void taskThreeCall(void) {
+    
+char *originalText = "original text";
+    char SubAlph[26] = {'m', 'n', 'b', 'v', 'c', 'x', 'z', 'l', 'k' ,'j' ,'h' ,'g', 'f' ,'d', 's', 'a', 'p', 'o', 'i', 'u', 'y', 't', 'r', 'e', 'w', 'q'};
+    
+    char *encryptedText = encrypt(originalText, SubAlph);
+    printf("The encrypted version of '%s', is %s.\n", originalText, encryptedText);
+}
+char* encrypt(char *originalText, char SubAlph[]) {
+
+int i;
+int length = strlen(originalText);
+char *encryptedText = (char *) malloc(sizeof(char)*length);
+
+for (i = 0; i < length; i++) {
+    int encryptionIndex = tolower(originalText[i]) - 97; 
+    if(encryptionIndex >= 0 && encryptionIndex < 26) {
+        encryptedText[i] = SubAlph[encryptionIndex];
+    } else {
+        encryptedText[i] = originalText[i];
+    }
+}
+return encryptedText;
+}
+
+/*----------------------------------------------------------------------------*/
+void taskFourCall(void) {
+    
+char *originalText = "test message";
+    char *encryptedText = "uciu fciimzc";
+     char SubAlph[26] = {'m', 'n', 'b', 'v', 'c', 'x', 'z', 'l', 'k' ,'j' ,'h' ,'g', 'f' ,'d', 's', 'a', 'p', 'o', 'i', 'u', 'y', 't', 'r', 'e', 'w', 'q'};
+     
+     char *decryptedText = decrypt(encryptedText, SubAlph);
+     printf("Decrypted Message: %s\n", decryptedText);
+}
+int find_index(char SubAlph[], char char_to_find) {
+    int i;
+    for (i = 0; i < 26; i++){
+        if (SubAlph[i] == char_to_find){
+            return i;
+        }
+    }
+    return 0;
+}
+char *decrypt(char *originalText, char SubAlph[]) {
+    int length = strlen(originalText);
+    char *decryptedText = (char *) malloc(sizeof(char)*length);
+    int i;
+    for (i = 0; i <length; i++){
+        int decryption_index = tolower(originalText[i]) - 'a';
+        if (decryption_index >= 0 && decryption_index < 26){
+            int SubAlph_index = find_index(SubAlph, tolower(originalText[i]));
+            decryptedText[i] = 'a' + SubAlph_index;
+        } else {
+            decryptedText[i] = originalText[i];
+        }
+    }
+    return decryptedText;
+}
+/*----------------------------------------------------------------------------*/
